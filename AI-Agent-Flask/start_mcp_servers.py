@@ -6,8 +6,6 @@ Start MCP servers for the Flask application
 import subprocess
 import sys
 import time
-import os
-import signal
 from pathlib import Path
 
 
@@ -20,43 +18,21 @@ def start_mcp_servers():
     project_root = current_file.parent
     tools_dir = project_root / "src" / "langgraphagenticai" / "tools"
 
-    # Start restaurant MCP server
-    restaurant_script = tools_dir / "mcp_restaurant.py"
-    parking_script = tools_dir / "mcp_parking.py"
-    csv_script = tools_dir / "mcp_csv_tools.py"
+    # Start MCP servers
+    task_script = tools_dir / "mcp_task_tools.py"
 
     processes = []
 
     try:
-        # Start restaurant server
-        print(f"Starting restaurant MCP server: {restaurant_script}")
-        restaurant_process = subprocess.Popen(
-            [sys.executable, str(restaurant_script)],
+        # Start task management server
+        print(f"Starting task management MCP server: {task_script}")
+        task_process = subprocess.Popen(
+            [sys.executable, str(task_script)],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
         )
-        processes.append(restaurant_process)
-
-        # Start parking server
-        print(f"Starting parking MCP server: {parking_script}")
-        parking_process = subprocess.Popen(
-            [sys.executable, str(parking_script)],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        processes.append(parking_process)
-
-        # Start CSV tools server
-        print(f"Starting CSV tools MCP server: {csv_script}")
-        csv_process = subprocess.Popen(
-            [sys.executable, str(csv_script)],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        processes.append(csv_process)
+        processes.append(task_process)
 
         # Wait a bit for servers to start
         print("Waiting for servers to start...")
@@ -66,22 +42,10 @@ def start_mcp_servers():
         import requests
 
         try:
-            restaurant_response = requests.get("http://127.0.0.1:8002/mcp", timeout=5)
-            print("✅ Restaurant MCP server is running")
-        except:
-            print("❌ Restaurant MCP server failed to start")
-
-        try:
-            parking_response = requests.get("http://127.0.0.1:8003/mcp", timeout=5)
-            print("✅ Parking MCP server is running")
-        except:
-            print("❌ Parking MCP server failed to start")
-
-        try:
-            csv_response = requests.get("http://127.0.0.1:8004/mcp", timeout=5)
-            print("✅ CSV Tools MCP server is running")
-        except:
-            print("❌ CSV Tools MCP server failed to start")
+            requests.get("http://127.0.0.1:8004/mcp", timeout=5)
+            print("✅ Task Management MCP server is running")
+        except Exception:
+            print("❌ Task Management MCP server failed to start")
 
         print("MCP servers started successfully!")
         print("Press Ctrl+C to stop all servers")
